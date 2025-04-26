@@ -12,14 +12,17 @@ import {
   Text,
   Title,
 } from '@mantine/core';
-import { useEffect, useState } from 'react';
-import { Car, Gauge, Thermometer } from 'tabler-icons-react';
+import { use, useEffect, useState } from 'react';
+import { Car, Engine, Gauge, Thermometer } from 'tabler-icons-react';
 import carImage from '/opel-lung-crop.png';
 
 function Dashboard() {
   const [rpm, setRpm] = useState(null);
   const [speed, setSpeed] = useState(null);
   const [coolant, setCoolant] = useState(null);
+  const [intakeTemp, setIntakeTemp] = useState(null);
+  const [engineLoad, setEnglineLoad] = useState(null);
+  const [throttlePos, setThrottlePos] = useState(null);
   const [wsConnected, setWsConnected] = useState(false);
 
   useEffect(() => {
@@ -46,6 +49,10 @@ function Dashboard() {
           if (data.RPM !== undefined) setRpm(data.RPM);
           if (data.SPEED !== undefined) setSpeed(data.SPEED);
           if (data.COOLANT_TEMP !== undefined) setCoolant(data.COOLANT_TEMP);
+          if (data.INTAKE_TEMP !== undefined) setIntakeTemp(data.INTAKE_TEMP);
+          if (data.ENGINE_LOAD !== undefined) setEnglineLoad(data.ENGINE_LOAD);
+          if (data.THROTTLE_POS !== undefined)
+            setThrottlePos(data.THROTTLE_POS);
         } catch (error) {
           console.error('Error handling WebSocket message:', error);
         }
@@ -126,6 +133,25 @@ function Dashboard() {
           />
         </Card>
 
+        {/* Throttle Position Card */}
+        <Card shadow='lg' padding='lg' radius='md' withBorder>
+          <Group position='center' mb='sm'>
+            <Thermometer size={40} color='purple' />
+            <Text size='lg' color='purple'>
+              Throttle Position
+            </Text>
+          </Group>
+          <Text align='center' size='xl' weight={700} color='purple'>
+            {throttlePos !== null ? throttlePos : '--'} %
+          </Text>
+          <Progress
+            value={throttlePos ? Math.min((throttlePos / 60) * 100, 100) : 0}
+            size='xl'
+            mt='sm'
+            color='purple'
+          />
+        </Card>
+
         {/* Speed Card */}
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <Group position='center' mb='sm'>
@@ -161,6 +187,44 @@ function Dashboard() {
             size='xl'
             mt='sm'
             color='red'
+          />
+        </Card>
+
+        {/* Intake Temp Card */}
+        <Card shadow='lg' padding='lg' radius='md' withBorder>
+          <Group position='center' mb='sm'>
+            <Thermometer size={40} color='orange' />
+            <Text size='lg' color='orange'>
+              Intake Temp
+            </Text>
+          </Group>
+          <Text align='center' size='xl' weight={700} color='orange'>
+            {intakeTemp !== null ? intakeTemp : '--'} °C
+          </Text>
+          <Progress
+            value={intakeTemp ? Math.min((intakeTemp / 60) * 100, 100) : 0}
+            size='xl'
+            mt='sm'
+            color='orange'
+          />
+        </Card>
+
+        {/* Engine Load Card */}
+        <Card shadow='lg' padding='lg' radius='md' withBorder>
+          <Group position='center' mb='sm'>
+            <Engine size={40} color='black' />
+            <Text size='lg' color='black'>
+              Engine Load
+            </Text>
+          </Group>
+          <Text align='center' size='xl' weight={700} color='black'>
+            {engineLoad !== null ? engineLoad : '--'} %
+          </Text>
+          <Progress
+            value={engineLoad ? Math.min((engineLoad / 100) * 100, 100) : 0}
+            size='xl'
+            mt='sm'
+            color='black'
           />
         </Card>
       </SimpleGrid>
