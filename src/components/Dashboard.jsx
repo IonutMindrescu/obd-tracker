@@ -95,7 +95,7 @@ function Dashboard() {
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <div className='flex items-center gap-8'>
             <img
-              src='public/opel-lung-crop.png'
+              src='/public/opel-lung-crop.png'
               className='w-48 object-cover'
               alt='Car Image'
             />
