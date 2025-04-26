@@ -14,6 +14,7 @@ import {
 } from '@mantine/core';
 import { useEffect, useState } from 'react';
 import { Car, Gauge, Thermometer } from 'tabler-icons-react';
+import carImage from '/opel-lung-crop.png';
 
 function Dashboard() {
   const [rpm, setRpm] = useState(null);
@@ -94,11 +95,7 @@ function Dashboard() {
         {/* RPM Card */}
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <div className='flex items-center gap-8'>
-            <img
-              src='/public/opel-lung-crop.png'
-              className='w-48 object-cover'
-              alt='Car Image'
-            />
+            <img src={carImage} className='w-48 object-cover' alt='Car Image' />
             <div className='flex-1 flex items-center'>
               <p className='text-xl font-bold'>
                 🏁 GTA Bucovina - Opel Dashboard
