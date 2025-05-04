@@ -1,1 +1,3 @@
-192.168.1.172
+ssh pi@192.168.1.172
+
+Websocket Docker: docker run -d -p 8000:8000 --name websocker docker --restart unless-stopped websocket-broadcast-server

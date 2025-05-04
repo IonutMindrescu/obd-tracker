@@ -4,7 +4,7 @@ import Dashboard from './components/Dashboard';
 
 function App() {
   return (
-    <div className='bg-gray-800 text-white'>
+    <div className='bg-gray-800 text-white h-screen'>
       <MantineProvider
         theme={{
           colorScheme: 'dark',

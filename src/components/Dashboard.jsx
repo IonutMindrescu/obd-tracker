@@ -13,7 +13,14 @@ import {
   Title,
 } from '@mantine/core';
 import { use, useEffect, useState } from 'react';
-import { Car, Engine, Gauge, Thermometer } from 'tabler-icons-react';
+import {
+  ArrowsMaximize,
+  Car,
+  Engine,
+  Gauge,
+  Thermometer,
+} from 'tabler-icons-react';
+import assistLogo from '/assist.png';
 import carImage from '/opel-lung-crop.png';
 
 function Dashboard() {
@@ -24,6 +31,19 @@ function Dashboard() {
   const [engineLoad, setEnglineLoad] = useState(null);
   const [throttlePos, setThrottlePos] = useState(null);
   const [wsConnected, setWsConnected] = useState(false);
+
+  const fullscreen = () => {
+    const elem = document.documentElement; // Fullscreen the whole page
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+      // Safari
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+      // IE11
+      elem.msRequestFullscreen();
+    }
+  };
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -43,7 +63,7 @@ function Dashboard() {
           }
 
           const data = JSON.parse(message); // 👈 Parse JSON
-          console.log('Parsed data:', data);
+          //console.log('Parsed data:', data);
 
           // Now you can use data.RPM, data.SPEED, etc
           if (data.RPM !== undefined) setRpm(data.RPM);
@@ -101,13 +121,21 @@ function Dashboard() {
       <SimpleGrid cols={1} spacing='lg' className='py-5'>
         {/* RPM Card */}
         <Card shadow='lg' padding='lg' radius='md' withBorder>
-          <div className='flex items-center gap-8'>
+          <div className='flex items-center gap-6'>
             <img src={carImage} className='w-48 object-cover' alt='Car Image' />
             <div className='flex-1 flex items-center'>
-              <p className='text-xl font-bold'>
-                🏁 GTA Bucovina - Opel Dashboard
+              <p className='text-[20pt] font-bold'>
+                🏁 GTA Bucovina - Dashboard
               </p>
             </div>
+            <img
+              src={assistLogo}
+              className='w-48 object-cover'
+              alt='Assist Logo'
+            />
+            <Button variant='light' color='blue' onClick={fullscreen}>
+              <ArrowsMaximize size={24} />
+            </Button>
           </div>
         </Card>
       </SimpleGrid>
@@ -117,11 +145,17 @@ function Dashboard() {
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <Group position='center' mb='sm'>
             <Gauge size={40} color='green' />
-            <Text size='lg' color='green'>
+            <Text size='lg' color='green' className='font-bold'>
               RPM
             </Text>
           </Group>
-          <Text align='center' size='xl' weight={700} color='green'>
+          <Text
+            align='center'
+            size='xl'
+            weight={700}
+            color='green'
+            className='font-bold'
+          >
             {rpm !== null ? rpm : '--'} RPM
           </Text>
           <Progress
@@ -237,12 +271,7 @@ function Dashboard() {
                 Real-time Data
               </Badge>
             </Group>
-            <Alert
-              variant='outline'
-              color='yellow'
-              radius='lg'
-              title='Alert title'
-            >
+            <Alert variant='outline' color='yellow' radius='lg'>
               Data is being updated every second directly from your OBD-II
               device. Keep your car engine running to get live updates!
             </Alert>
