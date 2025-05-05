@@ -20,6 +20,7 @@ import {
   Gauge,
   Thermometer,
 } from 'tabler-icons-react';
+import MapComponent from './MapComponent'; // Import MapComponent into App.jsx
 import assistLogo from '/assist.png';
 import carImage from '/opel-lung-crop.png';
 
@@ -118,29 +119,37 @@ function Dashboard() {
 
   return (
     <Container size='xl'>
-      <SimpleGrid cols={1} spacing='lg' className='py-5'>
-        {/* RPM Card */}
+      <div className='py-5'>
         <Card shadow='lg' padding='lg' radius='md' withBorder>
-          <div className='flex items-center gap-6'>
-            <img src={carImage} className='w-48 object-cover' alt='Car Image' />
-            <div className='flex-1 flex items-center'>
-              <p className='text-[20pt] font-bold'>
-                🏁 GTA Bucovina - Dashboard
-              </p>
+          <div className='flex flex-col md:flex-row items-center justify-between gap-6'>
+            {/* Car image */}
+            <img
+              src={carImage}
+              className='w-40 md:w-48 object-cover'
+              alt='Car Image'
+            />
+
+            {/* Center title */}
+            <div className='flex-1 text-center md:text-left'>
+              <p className='text-[20pt] font-bold'>🏁 GTA Bucovina</p>
             </div>
+
+            {/* Assist logo */}
             <img
               src={assistLogo}
-              className='w-48 object-cover'
+              className='w-32 md:w-48 object-cover'
               alt='Assist Logo'
             />
+
+            {/* Fullscreen button */}
             <Button variant='light' color='blue' onClick={fullscreen}>
               <ArrowsMaximize size={24} />
             </Button>
           </div>
         </Card>
-      </SimpleGrid>
+      </div>
 
-      <SimpleGrid cols={3} spacing='lg'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
         {/* RPM Card */}
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <Group position='center' mb='sm'>
@@ -163,7 +172,7 @@ function Dashboard() {
             size='xl'
             mt='sm'
             color='green'
-            label={`${Math.min((rpm / 7000) * 100, 100).toFixed(0)}%`} // Display the percentage as a label
+            label={`${Math.min((rpm / 7000) * 100, 100).toFixed(0)}%`}
           />
         </Card>
 
@@ -261,12 +270,14 @@ function Dashboard() {
             color='black'
           />
         </Card>
-      </SimpleGrid>
+      </div>
 
       <Grid mt='xl' gutter='lg'>
         <Grid.Col span={12}>
           <Card shadow='lg' padding='lg' radius='md' withBorder>
-            <Group position='center' mb='sm'>
+            <MapComponent />
+
+            {/* <Group position='center' mb='sm'>
               <Badge color='blue' variant='filled' size='lg'>
                 Real-time Data
               </Badge>
@@ -274,7 +285,7 @@ function Dashboard() {
             <Alert variant='outline' color='yellow' radius='lg'>
               Data is being updated every second directly from your OBD-II
               device. Keep your car engine running to get live updates!
-            </Alert>
+            </Alert> */}
           </Card>
         </Grid.Col>
       </Grid>
