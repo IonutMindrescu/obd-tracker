@@ -20,6 +20,7 @@ import {
   Gauge,
   Thermometer,
 } from 'tabler-icons-react';
+import GForceWidget from './GForceWidget';
 import MapComponent from './MapComponent'; // Import MapComponent into App.jsx
 import assistLogo from '/assist.png';
 import carImage from '/opel-lung-crop.png';
@@ -150,6 +151,7 @@ function Dashboard() {
       </div>
 
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+        <GForceWidget />
         {/* RPM Card */}
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <Group position='center' mb='sm'>
