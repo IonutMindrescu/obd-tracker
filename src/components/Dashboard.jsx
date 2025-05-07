@@ -11,13 +11,19 @@ import {
   SimpleGrid,
   Text,
   Title,
+  rem,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import { use, useEffect, useState } from 'react';
 import {
   ArrowsMaximize,
+  BatteryAutomotive,
+  BrandStripe,
   Car,
+  Check,
   Engine,
   Gauge,
+  Lamp2,
   Thermometer,
 } from 'tabler-icons-react';
 import GForceWidget from './GForceWidget';
@@ -45,6 +51,18 @@ function Dashboard() {
       // IE11
       elem.msRequestFullscreen();
     }
+  };
+
+  const handleLights = async () => {
+    notifications.show({
+      title: 'Success',
+      message: 'Exterior Lights turned on!',
+      icon: <Check style={{ width: rem(20), height: rem(20) }} />,
+      color: 'green',
+      radius: 'md',
+      withBorder: true,
+      autoClose: true,
+    });
   };
 
   useEffect(() => {
@@ -120,7 +138,7 @@ function Dashboard() {
 
   return (
     <Container size='xl'>
-      <div className='py-5'>
+      <div className='pt-2 pb-3'>
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <div className='flex flex-col md:flex-row items-center justify-between gap-6'>
             {/* Car image */}
@@ -150,8 +168,22 @@ function Dashboard() {
         </Card>
       </div>
 
+      <div className='pb-3'>
+        <Card shadow='lg' padding='lg' radius='md' withBorder>
+          <Button
+            rightSection={<Lamp2 size={14} />}
+            variant='outline'
+            onClick={() => handleLights()}
+          >
+            Toggle Lights
+          </Button>
+        </Card>
+      </div>
+
       <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+        {/* G-Force Widget */}
         <GForceWidget />
+
         {/* RPM Card */}
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <Group position='center' mb='sm'>
@@ -270,6 +302,25 @@ function Dashboard() {
             size='xl'
             mt='sm'
             color='black'
+          />
+        </Card>
+
+        {/* Battery Card */}
+        <Card shadow='lg' padding='lg' radius='md' withBorder>
+          <Group position='center' mb='sm'>
+            <BatteryAutomotive size={40} color='green' />
+            <Text size='lg' color='green'>
+              Voltage
+            </Text>
+          </Group>
+          <Text align='center' size='xl' weight={700} color='black'>
+            {engineLoad !== null ? engineLoad : '--'} V
+          </Text>
+          <Progress
+            value={engineLoad ? Math.min((engineLoad / 100) * 100, 100) : 0}
+            size='xl'
+            mt='sm'
+            color='green'
           />
         </Card>
       </div>

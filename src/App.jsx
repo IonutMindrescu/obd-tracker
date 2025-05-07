@@ -1,5 +1,7 @@
 import { Container, MantineProvider, Title } from '@mantine/core';
 import '@mantine/core/styles.css';
+import { Notifications } from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
 import Dashboard from './components/Dashboard';
 
 function App() {
@@ -26,6 +28,7 @@ function App() {
         }}
       >
         <Dashboard />
+        <Notifications position='bottom-right' />
       </MantineProvider>
     </div>
   );

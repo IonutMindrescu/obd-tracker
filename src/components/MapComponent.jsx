@@ -9,8 +9,8 @@ import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'; // Use M
 const MapComponent = () => {
   return (
     <MapContainer
-      center={[46.5166761, 19.2692762]}
-      zoom={13}
+      center={[46.516636, 19.270295]}
+      zoom={17}
       style={{ height: '500px', width: '100%' }}
     >
       {/* TileLayer is used to add map tiles */}
