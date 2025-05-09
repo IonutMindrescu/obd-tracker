@@ -22,6 +22,7 @@ import {
   Car,
   Check,
   Engine,
+  Filter,
   Gauge,
   Lamp2,
   Thermometer,
@@ -38,6 +39,8 @@ function Dashboard() {
   const [intakeTemp, setIntakeTemp] = useState(null);
   const [engineLoad, setEnglineLoad] = useState(null);
   const [throttlePos, setThrottlePos] = useState(null);
+  const [carVoltage, setCarVoltage] = useState(null);
+  const [engineMAF, setEngineMAF] = useState(null);
   const [wsConnected, setWsConnected] = useState(false);
 
   const fullscreen = () => {
@@ -91,6 +94,8 @@ function Dashboard() {
           if (data.COOLANT_TEMP !== undefined) setCoolant(data.COOLANT_TEMP);
           if (data.INTAKE_TEMP !== undefined) setIntakeTemp(data.INTAKE_TEMP);
           if (data.ENGINE_LOAD !== undefined) setEnglineLoad(data.ENGINE_LOAD);
+          if (data.ELM_VOLTAGE !== undefined) setCarVoltage(data.ELM_VOLTAGE);
+          if (data.MAF !== undefined) setEngineMAF(data.MAF);
           if (data.THROTTLE_POS !== undefined)
             setThrottlePos(data.THROTTLE_POS);
         } catch (error) {
@@ -219,7 +224,7 @@ function Dashboard() {
             </Text>
           </Group>
           <Text align='center' size='xl' weight={700} color='purple'>
-            {throttlePos !== null ? throttlePos : '--'} %
+            {throttlePos !== null ? throttlePos.toFixed(2) : '--'} %
           </Text>
           <Progress
             value={throttlePos ? Math.min((throttlePos / 60) * 100, 100) : 0}
@@ -276,7 +281,7 @@ function Dashboard() {
             </Text>
           </Group>
           <Text align='center' size='xl' weight={700} color='orange'>
-            {intakeTemp !== null ? intakeTemp : '--'} °C
+            {intakeTemp !== null ? intakeTemp.toFixed(2) : '--'} °C
           </Text>
           <Progress
             value={intakeTemp ? Math.min((intakeTemp / 60) * 100, 100) : 0}
@@ -295,7 +300,7 @@ function Dashboard() {
             </Text>
           </Group>
           <Text align='center' size='xl' weight={700} color='black'>
-            {engineLoad !== null ? engineLoad : '--'} %
+            {engineLoad !== null ? engineLoad.toFixed(2) : '--'} %
           </Text>
           <Progress
             value={engineLoad ? Math.min((engineLoad / 100) * 100, 100) : 0}
@@ -314,13 +319,32 @@ function Dashboard() {
             </Text>
           </Group>
           <Text align='center' size='xl' weight={700} color='black'>
-            {engineLoad !== null ? engineLoad : '--'} V
+            {carVoltage !== null ? carVoltage : '--'} V
           </Text>
           <Progress
-            value={engineLoad ? Math.min((engineLoad / 100) * 100, 100) : 0}
+            value={carVoltage ? Math.min((carVoltage / 100) * 100, 100) : 0}
             size='xl'
             mt='sm'
             color='green'
+          />
+        </Card>
+
+        {/* MAF Card */}
+        <Card shadow='lg' padding='lg' radius='md' withBorder>
+          <Group position='center' mb='sm'>
+            <Filter size={40} color='brown' />
+            <Text size='lg' color='brown'>
+              MAF
+            </Text>
+          </Group>
+          <Text align='center' size='xl' weight={700} color='black'>
+            {engineMAF !== null ? engineMAF : '--'} g/s
+          </Text>
+          <Progress
+            value={engineMAF ? Math.min((engineMAF / 100) * 100, 100) : 0}
+            size='xl'
+            mt='sm'
+            color='brown'
           />
         </Card>
       </div>

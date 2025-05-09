@@ -1,0 +1,15 @@
+[ BT serial port binding ]
+sudo rfcomm bind /dev/rfcomm0 DD:0D:30:48:A4:9C
+
+[ BT Pairing OBD ]
+
+bluetoothctl
+> scan on
+> pair DD:0D:30:48:A4:9C
+> trust DD:0D:30:48:A4:9C
+> connect DD:0D:30:48:A4:9C
+
+[ Start DEMO Script Headless: ]
+
+source myenv/bin/activate
+nohup /home/pi/obd-tracker/myenv/bin/python /home/pi/obd-tracker/demo.py > /dev/null 2>&1 &
