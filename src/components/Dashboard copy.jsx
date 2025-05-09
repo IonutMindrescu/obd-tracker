@@ -89,14 +89,15 @@ function Dashboard() {
           console.log('Parsed data:', data);
 
           // Now you can use data.RPM, data.SPEED, etc
-          if (data.command === 'RPM') setRpm(data.value);
-          if (data.command === 'SPEED') setSpeed(data.value);
-          if (data.command === 'COOLANT_TEMP') setCoolant(data.value);
-          if (data.command === 'INTAKE_TEMP') setIntakeTemp(data.value);
-          if (data.command === 'ENGINE_LOAD') setEnglineLoad(data.value);
-          if (data.command === 'ELM_VOLTAGE') setCarVoltage(data.value);
-          if (data.command === 'MAF') setEngineMAF(data.value);
-          if (data.command === 'THROTTLE_POS') setThrottlePos(data.value);
+          if (data.RPM !== undefined) setRpm(data.RPM);
+          if (data.SPEED !== undefined) setSpeed(data.SPEED);
+          if (data.COOLANT_TEMP !== undefined) setCoolant(data.COOLANT_TEMP);
+          if (data.INTAKE_TEMP !== undefined) setIntakeTemp(data.INTAKE_TEMP);
+          if (data.ENGINE_LOAD !== undefined) setEnglineLoad(data.ENGINE_LOAD);
+          if (data.ELM_VOLTAGE !== undefined) setCarVoltage(data.ELM_VOLTAGE);
+          if (data.MAF !== undefined) setEngineMAF(data.MAF);
+          if (data.THROTTLE_POS !== undefined)
+            setThrottlePos(data.THROTTLE_POS);
         } catch (error) {
           console.error('Error handling WebSocket message:', error);
         }
@@ -321,7 +322,7 @@ function Dashboard() {
             {carVoltage !== null ? carVoltage : '--'} V
           </Text>
           <Progress
-            value={carVoltage ? Math.min((carVoltage / 16) * 100, 100) : 0}
+            value={carVoltage ? Math.min((carVoltage / 100) * 100, 100) : 0}
             size='xl'
             mt='sm'
             color='green'
