@@ -14,8 +14,9 @@ import {
   rem,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import {
+  AlertTriangle,
   ArrowsMaximize,
   BatteryAutomotive,
   BrandStripe,
@@ -29,10 +30,15 @@ import {
 } from 'tabler-icons-react';
 import GForceWidget from './GForceWidget';
 import MapComponent from './MapComponent'; // Import MapComponent into App.jsx
+import alertSound from '/alarm.wav'; // Make sure you have an audio file
 import assistLogo from '/assist.png';
 import carImage from '/opel-lung-crop.png';
 
 function Dashboard() {
+  // Tresholds
+  const COOLANT_TEMP_TRESHOLD = 90;
+
+  // Consts
   const [rpm, setRpm] = useState(null);
   const [speed, setSpeed] = useState(null);
   const [coolant, setCoolant] = useState(null);
@@ -42,6 +48,10 @@ function Dashboard() {
   const [carVoltage, setCarVoltage] = useState(null);
   const [engineMAF, setEngineMAF] = useState(null);
   const [wsConnected, setWsConnected] = useState(false);
+  const ws = useRef(null); // ✅ Add this
+  const alertAudio = new Audio(alertSound);
+  const hasAlerted = useState(false); // 🔁 Track alert state
+  const [isCoolantAlert, setIsCoolantAlert] = useState(false);
 
   const fullscreen = () => {
     const elem = document.documentElement; // Fullscreen the whole page
@@ -56,10 +66,10 @@ function Dashboard() {
     }
   };
 
-  const handleLights = async () => {
+  const ligtsMessage = async (message) => {
     notifications.show({
-      title: 'Success',
-      message: 'Exterior Lights turned on!',
+      //title: 'Success',
+      message: message,
       icon: <Check style={{ width: rem(20), height: rem(20) }} />,
       color: 'green',
       radius: 'md',
@@ -68,30 +78,80 @@ function Dashboard() {
     });
   };
 
+  const sendMessage = (message) => {
+    //console.log('Sending type:', typeof message, 'value:', message);
+
+    ligtsMessage(`Ligts set to: ${message}`);
+
+    if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      ws.current.send(message);
+      console.log('Sent:', message);
+    } else {
+      console.warn('WebSocket is not open');
+    }
+  };
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      const ws = new WebSocket('wss://ws.sonny.ro');
-      ws.onopen = () => {
+      ws.current = new WebSocket('wss://ws.sonny.ro');
+
+      ws.current.onopen = () => {
         console.log('Connected to WebSocket');
         setWsConnected(true);
-        ws.send(JSON.stringify({ type: 'subscribe', topic: 'all' })); // 👈 try sending something
+        ws.current.send(JSON.stringify({ type: 'subscribe', topic: 'all' })); // 👈 try sending something
       };
 
-      ws.onmessage = async (event) => {
+      ws.current.onmessage = async (event) => {
         try {
           let message = event.data;
 
           if (message instanceof Blob) {
-            message = await message.text(); // 👈 Convert Blob to text
+            message = await message.text(); // Convert Blob to text
           }
 
-          const data = JSON.parse(message); // 👈 Parse JSON
+          let data;
+          try {
+            data = JSON.parse(message); // Try to parse JSON
+          } catch (err) {
+            console.log('Received plain text message:', message);
+            return; // Optionally handle it here if needed
+          }
+
           console.log('Parsed data:', data);
 
-          // Now you can use data.RPM, data.SPEED, etc
+          // Handle JSON data
           if (data.command === 'RPM') setRpm(data.value);
           if (data.command === 'SPEED') setSpeed(data.value);
-          if (data.command === 'COOLANT_TEMP') setCoolant(data.value);
+          if (data.command === 'COOLANT_TEMP') {
+            setCoolant(data.value);
+
+            if (data.value > COOLANT_TEMP_TRESHOLD && !hasAlerted.current) {
+              hasAlerted.current = true;
+              setIsCoolantAlert(true);
+
+              alertAudio
+                .play()
+                .catch((err) => console.warn('Audio play error:', err));
+
+              notifications.show({
+                title: 'High Coolant Temperature',
+                message: `Coolant temp is ${data.value}°C`,
+                icon: (
+                  <AlertTriangle style={{ width: rem(20), height: rem(20) }} />
+                ),
+                color: 'red',
+                radius: 'md',
+                withBorder: true,
+                autoClose: false,
+              });
+            }
+
+            if (data.value <= COOLANT_TEMP_TRESHOLD && hasAlerted.current) {
+              hasAlerted.current = false;
+              setIsCoolantAlert(false);
+            }
+          }
+
           if (data.command === 'INTAKE_TEMP') setIntakeTemp(data.value);
           if (data.command === 'ENGINE_LOAD') setEnglineLoad(data.value);
           if (data.command === 'ELM_VOLTAGE') setCarVoltage(data.value);
@@ -102,16 +162,16 @@ function Dashboard() {
         }
       };
 
-      ws.onerror = (event) => {
+      ws.current.onerror = (event) => {
         console.error('WebSocket error details:', event);
       };
-      ws.onclose = () => {
+      ws.current.onclose = () => {
         console.log('WebSocket connection closed');
         setWsConnected(false);
       };
 
       return () => {
-        ws.close();
+        if (ws.current) ws.current.close();
       };
     }, 1000); // Add a 1-second delay
 
@@ -174,13 +234,55 @@ function Dashboard() {
 
       <div className='pb-3'>
         <Card shadow='lg' padding='lg' radius='md' withBorder>
-          <Button
-            rightSection={<Lamp2 size={14} />}
-            variant='outline'
-            onClick={() => handleLights()}
-          >
-            Toggle Lights
-          </Button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Button
+              variant='outline'
+              color='black'
+              onClick={() => sendMessage('off')}
+            >
+              Turn Off
+            </Button>
+
+            <Button
+              variant='outline'
+              color='blue'
+              onClick={() => sendMessage('police')}
+            >
+              Police Mode
+            </Button>
+
+            <Button
+              variant='outline'
+              color='red'
+              onClick={() => sendMessage('pit')}
+            >
+              Pit Mode
+            </Button>
+
+            <Button
+              variant='outline'
+              color='orange'
+              onClick={() => sendMessage('hazard')}
+            >
+              Hazard
+            </Button>
+
+            <Button
+              variant='outline'
+              color='yellow'
+              onClick={() => sendMessage('chase')}
+            >
+              Chase Mode
+            </Button>
+
+            <Button
+              variant='outline'
+              color='green'
+              onClick={() => sendMessage('acceleration')}
+            >
+              Acceleration Mode
+            </Button>
+          </div>
         </Card>
       </div>
 
@@ -253,7 +355,13 @@ function Dashboard() {
         </Card>
 
         {/* Coolant Temp Card */}
-        <Card shadow='lg' padding='lg' radius='md' withBorder>
+        <Card
+          shadow='lg'
+          padding='lg'
+          radius='md'
+          withBorder
+          className={isCoolantAlert ? 'animate-pulse !bg-red-100' : ''}
+        >
           <Group position='center' mb='sm'>
             <Thermometer size={40} color='red' />
             <Text size='lg' color='red'>
@@ -337,7 +445,7 @@ function Dashboard() {
             </Text>
           </Group>
           <Text align='center' size='xl' weight={700} color='black'>
-            {engineMAF !== null ? engineMAF : '--'} g/s
+            {engineMAF !== null ? engineMAF.toFixed(2) : '--'} g/s
           </Text>
           <Progress
             value={engineMAF ? Math.min((engineMAF / 100) * 100, 100) : 0}

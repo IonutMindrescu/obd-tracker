@@ -12,6 +12,8 @@ class VehicleSimulator:
         self.engine_load = 10
         self.throttle_pos = 0
         self.intake_temp = 25
+        self.elm_voltage = 12.5
+        self.maf = 2.0
 
     def generate_data(self):
         # Simulate throttle changes
@@ -43,28 +45,37 @@ class VehicleSimulator:
         self.intake_temp += random.uniform(-1, 1)
         self.intake_temp = max(10, min(50, self.intake_temp))
 
+        # Simulate ELM voltage fluctuation
+        self.elm_voltage += random.uniform(-0.05, 0.05)
+        self.elm_voltage = max(11.5, min(14.5, self.elm_voltage))
+
+        # Simulate Mass Air Flow (MAF) in grams/sec
+        self.maf = (self.rpm * self.engine_load) / 12000 + random.uniform(-1, 1)
+        self.maf = max(0, min(100, self.maf))
+
         return {
             "RPM": round(self.rpm, 1),
             "SPEED": round(self.speed, 1),
             "COOLANT_TEMP": round(self.coolant_temp),
             "ENGINE_LOAD": round(self.engine_load, 2),
             "THROTTLE_POS": round(self.throttle_pos, 2),
-            "INTAKE_TEMP": round(self.intake_temp)
+            "INTAKE_TEMP": round(self.intake_temp),
+            "ELM_VOLTAGE": round(self.elm_voltage, 2),
+            "MAF": round(self.maf, 2)
         }
 
 async def connect_to_obd():
-    uri = "wss://ws.sonny.ro"  # This includes the `/obd` path
+    uri = "wss://ws.sonny.ro"
     simulator = VehicleSimulator()
 
     async with websockets.connect(uri) as websocket:
         print("Connected to WebSocket")
         while True:
             data = simulator.generate_data()
-            json_data = json.dumps(data)
-
-            await websocket.send(json_data)
-            print(f"Sent: {json_data}")
-
-            await asyncio.sleep(0.5)  # 0.5 second interval
+            for key, value in data.items():
+                message = json.dumps({"command": key, "value": value})
+                await websocket.send(message)
+                print(f"Sent: {message}")
+            await asyncio.sleep(0.5)
 
 asyncio.run(connect_to_obd())

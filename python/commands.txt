@@ -13,3 +13,5 @@ bluetoothctl
 
 source myenv/bin/activate
 nohup /home/pi/obd-tracker/myenv/bin/python /home/pi/obd-tracker/demo.py > /dev/null 2>&1 &
+
+nohup /home/pi/obd-tracker/myenv/bin/python /home/pi/obd-tracker/async-app.py > /dev/null 2>&1 &
