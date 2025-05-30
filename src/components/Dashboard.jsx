@@ -455,24 +455,6 @@ function Dashboard() {
           />
         </Card>
       </div>
-
-      <Grid mt='xl' gutter='lg'>
-        <Grid.Col span={12}>
-          <Card shadow='lg' padding='lg' radius='md' withBorder>
-            {/* <MapComponent /> */}
-
-            {/* <Group position='center' mb='sm'>
-              <Badge color='blue' variant='filled' size='lg'>
-                Real-time Data
-              </Badge>
-            </Group>
-            <Alert variant='outline' color='yellow' radius='lg'>
-              Data is being updated every second directly from your OBD-II
-              device. Keep your car engine running to get live updates!
-            </Alert> */}
-          </Card>
-        </Grid.Col>
-      </Grid>
     </Container>
   );
 }
