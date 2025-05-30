@@ -459,7 +459,7 @@ function Dashboard() {
       <Grid mt='xl' gutter='lg'>
         <Grid.Col span={12}>
           <Card shadow='lg' padding='lg' radius='md' withBorder>
-            <MapComponent />
+            {/* <MapComponent /> */}
 
             {/* <Group position='center' mb='sm'>
               <Badge color='blue' variant='filled' size='lg'>
