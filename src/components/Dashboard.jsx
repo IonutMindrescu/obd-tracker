@@ -120,12 +120,15 @@ function Dashboard() {
           console.log('Parsed data:', data);
 
           // Handle JSON data
-          if (data.command === 'RPM') setRpm(data.value);
-          if (data.command === 'SPEED') setSpeed(data.value);
-          if (data.command === 'COOLANT_TEMP') {
-            setCoolant(data.value);
+          setRpm(data.RPM);
+          setSpeed(data.SPEED);
+          if (data.COOLANT_TEMP !== undefined) {
+            setCoolant(data.COOLANT_TEMP);
 
-            if (data.value > COOLANT_TEMP_TRESHOLD && !hasAlerted.current) {
+            if (
+              data.COOLANT_TEMP > COOLANT_TEMP_TRESHOLD &&
+              !hasAlerted.current
+            ) {
               hasAlerted.current = true;
               setIsCoolantAlert(true);
 
@@ -135,7 +138,7 @@ function Dashboard() {
 
               notifications.show({
                 title: 'High Coolant Temperature',
-                message: `Coolant temp is ${data.value}°C`,
+                message: `Coolant temp is ${data.COOLANT_TEMP}°C`,
                 icon: (
                   <AlertTriangle style={{ width: rem(20), height: rem(20) }} />
                 ),
