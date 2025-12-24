@@ -155,11 +155,11 @@ function Dashboard() {
             }
           }
 
-          setIntakeTemp(data.INTAKE_TEMP);
-          setEnglineLoad(data.ENGINE_LOAD);
-          setCarVoltage(data.OBD_VOLTAGE);
-          setEngineMAP(data.MAP);
-          setThrottlePos(data.THROTTLE);
+          if (data.INTAKE_TEMP !== undefined) setIntakeTemp(data.INTAKE_TEMP);
+          if (data.ENGINE_LOAD !== undefined) setEnglineLoad(data.ENGINE_LOAD);
+          if (data.OBD_VOLTAGE !== undefined) setCarVoltage(data.OBD_VOLTAGE);
+          if (data.MAP !== undefined) setEngineMAP(data.MAP);
+          if (data.THROTTLE !== undefined) setThrottlePos(data.THROTTLE);
         } catch (error) {
           console.error('Error handling WebSocket message:', error);
         }
