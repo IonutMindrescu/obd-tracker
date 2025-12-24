@@ -46,7 +46,7 @@ function Dashboard() {
   const [engineLoad, setEnglineLoad] = useState(null);
   const [throttlePos, setThrottlePos] = useState(null);
   const [carVoltage, setCarVoltage] = useState(null);
-  const [engineMAF, setEngineMAF] = useState(null);
+  const [engineMAP, setEngineMAP] = useState(null);
   const [wsConnected, setWsConnected] = useState(false);
   const ws = useRef(null); // ✅ Add this
   const alertAudio = new Audio(alertSound);
@@ -155,11 +155,11 @@ function Dashboard() {
             }
           }
 
-          if (data.command === 'INTAKE_TEMP') setIntakeTemp(data.value);
-          if (data.command === 'ENGINE_LOAD') setEnglineLoad(data.value);
-          if (data.command === 'ELM_VOLTAGE') setCarVoltage(data.value);
-          if (data.command === 'MAF') setEngineMAF(data.value);
-          if (data.command === 'THROTTLE_POS') setThrottlePos(data.value);
+          if (data.command === 'INTAKE_TEMP') setIntakeTemp(data.INTAKE_TEMP);
+          if (data.command === 'ENGINE_LOAD') setEnglineLoad(data.ENGINE_LOAD);
+          if (data.command === 'OBD_VOLTAGE') setCarVoltage(data.OBD_VOLTAGE);
+          if (data.command === 'MAP') setEngineMAP(data.MAP);
+          if (data.command === 'THROTTLE') setThrottlePos(data.THROTTLE);
         } catch (error) {
           console.error('Error handling WebSocket message:', error);
         }
@@ -439,19 +439,19 @@ function Dashboard() {
           />
         </Card>
 
-        {/* MAF Card */}
+        {/* MAP Card */}
         <Card shadow='lg' padding='lg' radius='md' withBorder>
           <Group position='center' mb='sm'>
             <Filter size={40} color='brown' />
             <Text size='lg' color='brown'>
-              MAF
+              MAP
             </Text>
           </Group>
           <Text align='center' size='xl' weight={700} color='black'>
-            {engineMAF !== null ? engineMAF.toFixed(2) : '--'} g/s
+            {engineMAP !== null ? engineMAP.toFixed(2) : '--'} g/s
           </Text>
           <Progress
-            value={engineMAF ? Math.min((engineMAF / 100) * 100, 100) : 0}
+            value={engineMAP ? Math.min((engineMAP / 100) * 100, 100) : 0}
             size='xl'
             mt='sm'
             color='brown'
