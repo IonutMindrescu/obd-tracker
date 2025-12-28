@@ -149,7 +149,10 @@ function Dashboard() {
               });
             }
 
-            if (data.value <= COOLANT_TEMP_TRESHOLD && hasAlerted.current) {
+            if (
+              data.COOLANT_TEMP <= COOLANT_TEMP_TRESHOLD &&
+              hasAlerted.current
+            ) {
               hasAlerted.current = false;
               setIsCoolantAlert(false);
             }
